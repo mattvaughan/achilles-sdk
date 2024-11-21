@@ -1,4 +1,4 @@
-SHELL:=/bin/bash
+SHELL:=/usr/bin/env bash
 
 PWD := $(PWD)
 CONTROLLER_GEN := $(PWD)/bin/controller-gen
