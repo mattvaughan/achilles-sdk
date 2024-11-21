@@ -1,8 +1,6 @@
 module github.com/reddit/achilles-sdk
 
-go 1.22.5
-
-toolchain go1.22.7
+go 1.23.0
 
 require (
 	github.com/fgrosse/zaptest v1.1.0
@@ -58,7 +56,6 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/common v0.49.0 // indirect

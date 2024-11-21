@@ -5,7 +5,6 @@ import (
 
 	"golang.org/x/time/rate"
 	"k8s.io/client-go/util/workqueue"
-	"sigs.k8s.io/controller-runtime/pkg/ratelimiter"
 )
 
 const (
@@ -32,7 +31,7 @@ func NewDefaultProviderRateLimiter(rps int) *workqueue.BucketRateLimiter {
 // NewDefaultManagedRateLimiter returns a rate limiter that takes the maximum
 // delay between the passed provider and a per-item exponential backoff limiter.
 // The exponential backoff limiter has a base delay of 1s and a maximum of 60s.
-func NewDefaultManagedRateLimiter(provider ratelimiter.RateLimiter) ratelimiter.RateLimiter {
+func NewDefaultManagedRateLimiter(provider workqueue.RateLimiter) workqueue.RateLimiter {
 	return workqueue.NewMaxOfRateLimiter(
 		workqueue.NewItemExponentialFailureRateLimiter(1*time.Second, 60*time.Second),
 		provider,
