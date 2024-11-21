@@ -14,6 +14,7 @@ import (
 	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	achapi "github.com/reddit/achilles-sdk-api/api"
 	"github.com/reddit/achilles-sdk/pkg/fsm"
@@ -40,7 +41,7 @@ const (
 func SetupController(
 	log *zap.SugaredLogger,
 	mgr ctrl.Manager,
-	rl workqueue.RateLimiter,
+	rl workqueue.TypedRateLimiter[reconcile.Request],
 	c *io.ClientApplicator,
 	metrics *metrics.Metrics,
 ) error {

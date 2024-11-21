@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+  "time"
 
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -32,7 +33,7 @@ type ObservedEventHandler struct {
 }
 
 type observedQueue struct {
-	workqueue.RateLimitingInterface
+	workqueue.TypedRateLimitingInterface[reconcile.Request]
 	handler    *ObservedEventHandler
 	eventType  string
 	triggerRef types.NamespacedName
@@ -62,30 +63,30 @@ func NewObservedEventHandler(
 	}
 }
 
-func (h *ObservedEventHandler) Create(ctx context.Context, evt event.CreateEvent, q workqueue.RateLimitingInterface) {
+func (h *ObservedEventHandler) Create(ctx context.Context, evt event.CreateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.handler.Create(ctx, evt, h.observedQueue("create", evt.Object, q))
 }
 
-func (h *ObservedEventHandler) Update(ctx context.Context, evt event.UpdateEvent, q workqueue.RateLimitingInterface) {
+func (h *ObservedEventHandler) Update(ctx context.Context, evt event.UpdateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.handler.Update(ctx, evt, h.observedQueue("update", evt.ObjectNew, q))
 }
 
-func (h *ObservedEventHandler) Delete(ctx context.Context, evt event.DeleteEvent, q workqueue.RateLimitingInterface) {
+func (h *ObservedEventHandler) Delete(ctx context.Context, evt event.DeleteEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.handler.Delete(ctx, evt, h.observedQueue("delete", evt.Object, q))
 }
 
-func (h *ObservedEventHandler) Generic(ctx context.Context, evt event.GenericEvent, q workqueue.RateLimitingInterface) {
+func (h *ObservedEventHandler) Generic(ctx context.Context, evt event.GenericEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.handler.Generic(ctx, evt, h.observedQueue("generic", evt.Object, q))
 }
 
 func (h *ObservedEventHandler) observedQueue(
 	eventType string,
 	trigger client.Object,
-	q workqueue.RateLimitingInterface,
+	q workqueue.TypedRateLimitingInterface[reconcile.Request],
 ) *observedQueue {
 	// trigger client.Object
 	return &observedQueue{
-		RateLimitingInterface: q,
+		TypedRateLimitingInterface: q,
 		handler:               h,
 		eventType:             eventType,
 		// ref to the object being reconciled (which may differ from the triggering object for owner ref based triggers)
@@ -94,11 +95,14 @@ func (h *ObservedEventHandler) observedQueue(
 	}
 }
 
-func (q observedQueue) Add(item interface{}) {
-	if req, ok := item.(reconcile.Request); ok {
-		q.observeEvent(req)
-	}
-	q.RateLimitingInterface.Add(item)
+func (q observedQueue) Add(item reconcile.Request) {
+  q.observeEvent(item)
+	q.TypedRateLimitingInterface.Add(item)
+}
+
+func (q observedQueue) AddAfter(item reconcile.Request, duration time.Duration) {
+    q.observeEvent(item)
+    q.TypedRateLimitingInterface.AddAfter(item, duration)
 }
 
 // logs an event trigger

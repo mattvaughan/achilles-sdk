@@ -15,6 +15,7 @@ import (
 	fsmtypes "github.com/reddit/achilles-sdk/pkg/fsm/types"
 	"github.com/reddit/achilles-sdk/pkg/internal/tests/api/test/v1alpha1"
 	"github.com/reddit/achilles-sdk/pkg/io"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 type state = fsmtypes.State[*v1alpha1.TestClaimed]
@@ -27,7 +28,7 @@ type reconciler struct {
 func setupTestClaimController(
 	log *zap.SugaredLogger,
 	mgr ctrl.Manager,
-	rl workqueue.RateLimiter,
+	rl workqueue.TypedRateLimiter[reconcile.Request],
 	c *io.ClientApplicator,
 	metrics *metrics.Metrics,
 ) error {

@@ -149,7 +149,7 @@ func (b *ClaimBuilder[T, U, ClaimedType, ClaimType]) Build() SetupFunc {
 	return func(
 		mgr ctrl.Manager,
 		log *zap.SugaredLogger,
-		rl workqueue.RateLimiter,
+		rl workqueue.TypedRateLimiter[reconcile.Request],
 		metrics *metrics.Metrics,
 	) error {
 		objGVK := meta.MustTypedObjectRefFromObject(b.obj, mgr.GetScheme())

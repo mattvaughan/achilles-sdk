@@ -238,7 +238,7 @@ func TestObserveEnqueueOwner(t *testing.T) {
 		}
 
 		t.Run(tc.name, func(t *testing.T) {
-			queue := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
+			queue := workqueue.NewTypedRateLimitingQueue(workqueue.DefaultTypedControllerRateLimiter[reconcile.Request]())
 			h.Create(context.TODO(), event.CreateEvent{Object: tc.o}, queue)
 			assertExpectedLogMessages(t, tc.expectedLogs, observedLogs)
 			assertExpectedCounterMetrics(t, reg, tc.expectedMetricLabelValues, tc.expectedMetricValues, "achilles_trigger")
@@ -356,7 +356,7 @@ func TestObserveEnqueueMapped(t *testing.T) {
 		)
 
 		t.Run(tc.name, func(t *testing.T) {
-			queue := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
+			queue := workqueue.NewTypedRateLimitingQueue(workqueue.DefaultTypedControllerRateLimiter[reconcile.Request]())
 			h.Create(context.TODO(), event.CreateEvent{Object: tc.o}, queue)
 			assertExpectedLogMessages(t, tc.expected, observedLogs)
 			assertExpectedCounterMetrics(t, reg, tc.expectedMetricLabelValues, tc.expectedMetricValues, "achilles_trigger")
