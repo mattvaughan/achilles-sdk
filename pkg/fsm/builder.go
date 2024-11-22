@@ -71,7 +71,7 @@ type watch struct {
 }
 
 type watchRawSource struct {
-	src         source.Source
+	src         source.TypedSource[reconcile.Request]
 	handler     handler.EventHandler
 	opts        []ctrlbuilder.WatchesOption
 	triggerType fsmhandler.TriggerType
@@ -233,11 +233,7 @@ func (b *Builder[T, Obj]) Build() SetupFunc {
 		}
 
 		for _, watch := range b.watchesRawSource {
-			builder.WatchesRawSource(
-				watch.src,
-				fsmhandler.NewObservedEventHandler(log, scheme, name, metrics, watch.handler, watch.triggerType),
-				watch.opts...
-			)
+			builder.WatchesRawSource(watch.src)
 		}
 
 		// custom controller builder options
