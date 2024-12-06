@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-  "time"
+	"time"
 
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -87,8 +87,8 @@ func (h *ObservedEventHandler) observedQueue(
 	// trigger client.Object
 	return &observedQueue{
 		TypedRateLimitingInterface: q,
-		handler:               h,
-		eventType:             eventType,
+		handler:                    h,
+		eventType:                  eventType,
 		// ref to the object being reconciled (which may differ from the triggering object for owner ref based triggers)
 		triggerRef: client.ObjectKeyFromObject(trigger),
 		triggerGVK: libmeta.MustGVKForObject(trigger, h.scheme),
@@ -96,13 +96,13 @@ func (h *ObservedEventHandler) observedQueue(
 }
 
 func (q observedQueue) Add(item reconcile.Request) {
-  q.observeEvent(item)
+	q.observeEvent(item)
 	q.TypedRateLimitingInterface.Add(item)
 }
 
 func (q observedQueue) AddAfter(item reconcile.Request, duration time.Duration) {
-    q.observeEvent(item)
-    q.TypedRateLimitingInterface.AddAfter(item, duration)
+	q.observeEvent(item)
+	q.TypedRateLimitingInterface.AddAfter(item, duration)
 }
 
 // logs an event trigger
