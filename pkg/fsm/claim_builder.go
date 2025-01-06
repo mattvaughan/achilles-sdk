@@ -262,7 +262,11 @@ func (b *ClaimBuilder[T, U, ClaimedType, ClaimType]) Build() SetupFunc {
 		}
 
 		for _, watch := range b.watchesRawSource {
-			claimedBuilder.WatchesRawSource(watch.src)
+			claimedBuilder.WatchesRawSource(source.TypedKind[client.Object, reconcile.Request](
+				mgr.GetCache(),
+				b.obj,
+				fsmhandler.NewObservedEventHandler(log, scheme, name, metrics, watch.handler, watch.triggerType),
+			))
 		}
 
 		// custom controller builder options
